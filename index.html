@@ -35,6 +35,10 @@
 
     <section id="updates">
         <h2>Real-Time Water Level and Quality Updates</h2>
+        <h3>Find Water Quality Data and Stations Near You</h3>
+        <input type="text" id="addressInput" placeholder="Enter your address">
+        <button onclick="searchAddress()">Search</button>
+        <p></p>
         <!-- Dynamically loaded content would go here -->
         <div id="map" style="height: 1000px;"></div>
 
@@ -51,13 +55,34 @@
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(station => {
-                        L.marker([station.lat, station.lon])
+                        L.marker([station.lat, station.lng])
                             .bindPopup(`<strong>Station:</strong> ${station.name}<br><strong>Ammonia Level:</strong> ${station.ammonia}`)
                             .addTo(map);
                     });
                 })
                 .catch(error => console.error('Error:', error));
+
+            function searchAddress() {
+                var address = document.getElementById("addressInput").value;
+                // Use a geocoding service to get the coordinates
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${address}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            var coords = data[0];
+                            map.setView([coords.lat, coords.lon], 13); // Adjust the zoom level as needed
+                            // Optionally, filter and display markers near this location
+                        } else {
+                            alert("Address not found!");
+                        }
+        })
+        .catch(error => console.error('Geocoding error:', error));
+}
+
+// Rest of your map initialization code...
+
         </script>
+
         <p>Want to use our API? Go for it! The API URL is: https://communitywater-047a19a44671.herokuapp.com/<p>
     </section>
 </main>
