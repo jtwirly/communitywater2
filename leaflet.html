@@ -17,7 +17,7 @@
         }).addTo(map);
 
         // Fetch data from R backend
-        fetch('https://your-r-api-endpoint.com/data')
+        fetch('https://communitywater-047a19a44671.herokuapp.com/')
             .then(response => response.json())
             .then(data => {
                 data.forEach(station => {
