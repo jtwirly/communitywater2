@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CommunityWater</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
 <header>
@@ -28,12 +30,35 @@
     <section id="about">
         <h2>About CommunityWater</h2>
         <p>This is a community-driven initiative to monitor and report on water levels and quality in our area.</p>
+        <img src="colorado_ammonia_max.png" alt="CommunityWater Data">
     </section>
 
     <section id="updates">
         <h2>Real-Time Water Level and Quality Updates</h2>
-        <img src="colorado_ammonia_max.png" alt="CommunityWater Data">
         <!-- Dynamically loaded content would go here -->
+        <div id="map" style="height: 1000px;"></div>
+
+        <script>
+            var map = L.map('map').setView([39.5501, -105.7821], 7); // Centered on Colorado
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Fetch data from R backend
+            fetch('https://communitywater-047a19a44671.herokuapp.com/')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(station => {
+                        L.marker([station.lat, station.lon])
+                            .bindPopup(`<strong>Station:</strong> ${station.name}<br><strong>Ammonia Level:</strong> ${station.ammonia}`)
+                            .addTo(map);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        </script>
+        <p>Want to use our API? Go for it! The API URL is: https://communitywater-047a19a44671.herokuapp.com/<p>
     </section>
 </main>
 
